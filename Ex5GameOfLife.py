@@ -75,8 +75,10 @@ class World:
             for j in range(len(self.all_cells)):
                 cell_neighbours = self.cell_neighbours(i, j)
                 live_cell_neighbours = cell_neighbours.count(Cell.ALIVE)
+
                 if self.all_cells[i][j] == Cell.ALIVE and live_cell_neighbours == 2 or live_cell_neighbours == 3:
                     pass
+
                 elif self.all_cells[i][j] == Cell.ALIVE and live_cell_neighbours < 2 or live_cell_neighbours > 3:
                     self.all_cells[i][j] = Cell.DEAD
 
