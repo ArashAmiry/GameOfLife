@@ -31,13 +31,14 @@ class Cell(Enum):
 
 
 class World:
+
     all_cells: List[List[Cell]] = []
     observers = []
 
     def __init__(self):
-        #test()  # <--------------- Uncomment to test!
+        # test()        # <--------------- Uncomment to test!
         n_locations = 10000
-        distribution = 0.15  # % of locations holding a Cell
+        distribution = 0.15   # % of locations holding a Cell
         self.create_world(n_locations, distribution)
         self.clock = pygame.time.Clock()
 
@@ -46,12 +47,19 @@ class World:
         import math
         self.all_cells = []  # TODO Create and populate world
 
+        self.cell_quantity(distribution, n_locations)
+
+        random.shuffle(self.cells)
+        self.cell_matrix(n_locations)
+
+    def cell_matrix(self, n_locations):
+        import math
+        self.all_cells = [self.cells[x:x + int(math.sqrt(n_locations))] for x in range(0, len(self.cells), int(math.sqrt(n_locations)))]
+
+    def cell_quantity(self, distribution, n_locations):
         live_cell_quantity = int(n_locations * distribution)
         dead_cell_quantity = int(n_locations - live_cell_quantity)
-        self.observers = [Cell.ALIVE] * live_cell_quantity + [Cell.DEAD] * dead_cell_quantity
-
-        random.shuffle(self.observers)
-        self.all_cells = [self.observers[x:x + int(math.sqrt(n_locations))] for x in range(0, len(self.observers), int(math.sqrt(n_locations)))]
+        self.cells = [Cell.ALIVE] * live_cell_quantity + [Cell.DEAD] * dead_cell_quantity
 
     def add_observer(self, observer):
         self.observers.append(observer)
@@ -62,6 +70,7 @@ class World:
 
     def update(self):
         # TODO Update (logically) the world
+        
         pass
         self.notify_observers()  # Tell the view to render
 
@@ -99,6 +108,7 @@ def test():
 
 # -------- Below is Pygame View stuff, nothing to do --------------
 class GameOfLifeView:
+
     SCREEN_WIDTH = 400
     SCREEN_HEIGHT = 400
 
