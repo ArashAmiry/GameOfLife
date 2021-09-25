@@ -38,9 +38,10 @@ class World:
     def __init__(self):
         # test()        # <--------------- Uncomment to test!
         n_locations = 10000
-        distribution = 0.15   # % of locations holding a Cell
+        distribution = 0.8   # % of locations holding a Cell
         self.create_world(n_locations, distribution)
         self.clock = pygame.time.Clock()
+        self.cells = []
 
     def create_world(self, n_locations, distribution):
         import random
@@ -74,10 +75,14 @@ class World:
             for j in range(len(self.all_cells)):
                 cell_neighbours = self.cell_neighbours(i, j)
                 live_cell_neighbours = cell_neighbours.count(Cell.ALIVE)
-                if live_cell_neighbours == 2 or live_cell_neighbours == 3:
+                if self.all_cells[i][j] == Cell.ALIVE and live_cell_neighbours == 2 or live_cell_neighbours == 3:
                     pass
-                else:
+                elif self.all_cells[i][j] == Cell.ALIVE and live_cell_neighbours < 2 or live_cell_neighbours > 3:
                     self.all_cells[i][j] = Cell.DEAD
+
+                elif self.all_cells[i][j] == Cell.DEAD and live_cell_neighbours == 3:
+                    self.all_cells[i][j] = Cell.ALIVE
+
         pass
         self.notify_observers()  # Tell the view to render
 
@@ -90,7 +95,8 @@ class World:
 
         return temp_neighbour
 
-    def is_valid_location(self, size: int, row: int, col: int):
+    @staticmethod
+    def is_valid_location(size: int, row: int, col: int):
         if 0 <= row < size and 0 <= col < size:
             return True
         else:
@@ -103,7 +109,7 @@ class World:
         while running:
             self.update()
             # Ensure program maintains a rate of 2 frames per second
-            self.clock.tick(2)
+            self.clock.tick(4)
             # Look at every event in the queue
             for event in pygame.event.get():
                 # Did the user hit a key?
@@ -165,4 +171,3 @@ class GameOfLifeView:
 
 if __name__ == "__main__":
     game_of_life()
-    #test()
