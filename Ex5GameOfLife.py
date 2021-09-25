@@ -45,7 +45,7 @@ class World:
     def create_world(self, n_locations, distribution):
         import random
         import math
-        self.all_cells = []  # TODO Create and populate world
+        # TODO Create and populate world
 
         self.cell_quantity(distribution, n_locations)
 
@@ -70,9 +70,31 @@ class World:
 
     def update(self):
         # TODO Update (logically) the world
-        
+        for i in range(len(self.all_cells)):
+            for j in range(len(self.all_cells)):
+                cell_neighbours = self.cell_neighbours(i, j)
+                live_cell_neighbours = cell_neighbours.count(Cell.ALIVE)
+                if live_cell_neighbours == 2 or live_cell_neighbours == 3:
+                    pass
+                else:
+                    self.all_cells[i][j] = Cell.DEAD
         pass
         self.notify_observers()  # Tell the view to render
+
+    def cell_neighbours(self, i, j):
+        temp_neighbour = []
+        for x in range(i - 1, i + 2):
+            for y in range(j - 1, j + 2):
+                if self.is_valid_location(len(self.all_cells), x, y) and (x != i and y != j):
+                    temp_neighbour.append(self.all_cells[x][y])
+
+        return temp_neighbour
+
+    def is_valid_location(self, size: int, row: int, col: int):
+        if 0 <= row < size and 0 <= col < size:
+            return True
+        else:
+            return False
 
     def run(self):
         # Variable to keep the main loop running
