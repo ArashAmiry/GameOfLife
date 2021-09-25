@@ -36,9 +36,11 @@ class World:
     observers = []
 
     def __init__(self):
+        import math
         # test()        # <--------------- Uncomment to test!
         n_locations = 10000
-        distribution = 0.8   # % of locations holding a Cell
+        self.size = int(math.sqrt(n_locations))
+        distribution = 0.15   # % of locations holding a Cell
         self.create_world(n_locations, distribution)
         self.clock = pygame.time.Clock()
         self.cells = []
@@ -71,15 +73,34 @@ class World:
 
     def update(self):
         # TODO Update (logically) the world
+        import math
         for i in range(len(self.all_cells)):
             for j in range(len(self.all_cells)):
-                cell_neighbours = self.cell_neighbours(i, j)
-                live_cell_neighbours = cell_neighbours.count(Cell.ALIVE)
+                #cell_neighbours = self.cell_neighbours(i, j)
+                temp_neighbour = []
+                if is_valid_location(self.size, j, i - 1):  # On top of agent
+                    temp_neighbour.append(self.all_cells[i - 1][j])
+                if is_valid_location(self.size, j + 1, i - 1):  # Top left of agent
+                    temp_neighbour.append(self.all_cells[i - 1][j + 1])
+                if is_valid_location(self.size, j - 1, i - 1):  # Top right of agent
+                    temp_neighbour.append(self.all_cells[i - 1][j - 1])
+                if is_valid_location(self.size, j, i + 1):  # Bottom of agent
+                    temp_neighbour.append(self.all_cells[i + 1][j])
+                if is_valid_location(self.size, j + 1, i + 1):  # Bottom right of agent
+                    temp_neighbour.append(self.all_cells[i + 1][j + 1])
+                if is_valid_location(self.size, j - 1, i + 1):  # Bottom left of agent
+                    temp_neighbour.append(self.all_cells[i + 1][j - 1])
+                if is_valid_location(self.size, j + 1, i):  # Right of agent
+                    temp_neighbour.append(self.all_cells[i][j + 1])
+                if is_valid_location(self.size, j - 1, i):  # Left of agent
+                    temp_neighbour.append(self.all_cells[i][j - 1])
 
-                if self.all_cells[i][j] == Cell.ALIVE and live_cell_neighbours == 2 or live_cell_neighbours == 3:
+                live_cell_neighbours = temp_neighbour.count(Cell.ALIVE)
+
+                if self.all_cells[i][j] == Cell.ALIVE and (live_cell_neighbours == 2 or live_cell_neighbours == 3):
                     pass
 
-                elif self.all_cells[i][j] == Cell.ALIVE and live_cell_neighbours < 2 or live_cell_neighbours > 3:
+                elif self.all_cells[i][j] == Cell.ALIVE and (live_cell_neighbours < 2 or live_cell_neighbours > 3):
                     self.all_cells[i][j] = Cell.DEAD
 
                 elif self.all_cells[i][j] == Cell.DEAD and live_cell_neighbours == 3:
@@ -95,14 +116,8 @@ class World:
                 if self.is_valid_location(len(self.all_cells), x, y) and (x != i and y != j):
                     temp_neighbour.append(self.all_cells[x][y])
 
-        return temp_neighbour
 
-    @staticmethod
-    def is_valid_location(size: int, row: int, col: int):
-        if 0 <= row < size and 0 <= col < size:
-            return True
-        else:
-            return False
+        return temp_neighbour
 
     def run(self):
         # Variable to keep the main loop running
@@ -120,7 +135,11 @@ class World:
 
 
 # -------- Write methods below this --------------
-
+def is_valid_location(size, row: int, col: int):
+    if 0 <= row < size and 0 <= col < size:
+        return True
+    else:
+        return False
 
 # ---------- Testing -----------------
 # Here you run your tests i.e. call your logic methods
